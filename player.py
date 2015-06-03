@@ -8,17 +8,27 @@ class Player:
         self.hand = {}
         self.rank = None
 
-    def Display_Hand(self):
-        human_readable_hand = []
+    def Get_Hand_As_List(self):
+        hand_list = []
 
         for key in self.hand.keys():
             for i in range(self.hand[key]):
-                human_readable_hand.append(key)
+                hand_list.append(key)
 
-        print(human_readable_hand)
+        return hand_list
 
-    def Check_Has_Cards(self, cards_to_remove):
-        print(cards_to_remove)
+    def Display_Hand(self):
+        print(self.Get_Hand_As_List())
+
+    def Check_Has_Cards(self, cards):
+        cards_to_remove = {}
+
+        for c in cards:
+            if cards_to_remove.__contains__(c):
+                cards_to_remove[c] += 1
+            else:
+                cards_to_remove[c] = 1
+
         for k, v in cards_to_remove.items():
             if self.hand.get(k) is None:
                 print("{} is not in your hand, try again.".format(str(k)))
@@ -38,13 +48,16 @@ class Player:
                 self.hand[card] = 1
 
     def Remove_Cards_From_Hand(self, cards):
-        print(cards)
-        for card in cards:
-            num_cards = self.hand.get(card)
-            if num_cards == 1:
-                del self.hand[card]
-            else:
-                self.hand[card] -= 1
+        if self.Check_Has_Cards(cards):
+            for card in cards:
+                num_cards = self.hand.get(card)
+                if num_cards == 1:
+                    del self.hand[card]
+                else:
+                    self.hand[card] -= 1
+            return True
+        else:
+            return False
 
     def Prompt_For_Cards(self, message, num_to_remove=None):
 
@@ -64,16 +77,7 @@ class Player:
 
             cards = [int(c) for c in cards]
 
-            cards_to_remove = {}
-
-            for c in cards:
-                if cards_to_remove.__contains__(c):
-                    cards_to_remove[c] += 1
-                else:
-                    cards_to_remove[c] = 1
-
-            if self.Check_Has_Cards(cards_to_remove):
-                self.Remove_Cards_From_Hand(cards)
+            if self.Remove_Cards_From_Hand(cards):
                 return cards
             else:
                 continue

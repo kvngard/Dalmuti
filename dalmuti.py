@@ -1,4 +1,4 @@
-# from queue import Queue
+from queue import Queue
 from random import shuffle
 from player import Player
 from functools import reduce
@@ -60,8 +60,6 @@ def Revolution(players):
                 if decision.lower() == "yes":
                     if p is players[-1]:
                         players.reverse()
-                        for p in players:
-                            print(p.name)
                     return True
                 elif decision.lower() == "no":
                     return False
@@ -72,33 +70,30 @@ def Revolution(players):
     return False
 
 
-def Tax_Player(player):
-    cards = {}
+def Tax_Player(player, num_to_tax):
+    cards = []
 
-    for k, v in player.hand.items():
-        if v == 1:
-            cards[k] = 1
-        elif v >= 2:
-            if len(cards) == 0:
-                cards[k] = 2
-            else:
-                cards[k] = 1
-        if len(cards) == 2 or cards[k] == 2:
-            break
+    hand = player.Get_Hand_As_List()
+
+    for i in range(num_to_tax):
+        cards.append(hand.pop(0))
 
     player.Remove_Cards_From_Hand(cards)
-    print(cards)
     return cards
 
 
 def Calculate_Taxes(players):
-    cards = players[0].Prompt_For_Cards(
+    bad_cards = players[0].Prompt_For_Cards(
         "Select two cards that you wish to dispose of: ", 2)
-    players[-1].Add_Cards_To_Hand(cards)
-    players[0].Add_Cards_To_Hand(Tax_Player(players[-1]))
+    good_cards = Tax_Player(players[-1], 2)
+    players[-1].Add_Cards_To_Hand(bad_cards)
+    players[0].Add_Cards_To_Hand(good_cards)
 
-    print(players[-1].hand)
-    print(players[0].hand)
+    bad_cards = players[1].Prompt_For_Cards(
+        "Select one cards that you wish to dispose of: ", 1)
+    good_cards = Tax_Player(players[-2], 1)
+    players[-2].Add_Cards_To_Hand(bad_cards)
+    players[1].Add_Cards_To_Hand(good_cards)
 
 
 def Setup(players, deck):
@@ -114,11 +109,21 @@ def Setup(players, deck):
 
 
 def main():
-    # hand_rank = Queue()
+    hand_rank = Queue()
     deck = Initialize_Deck()
     players = Rank_Players(Get_Players())
 
     Setup(players, deck)
+
+    for p in players:
+        hand_rank.put(p)
+
+    num_players = hand_rank.qsize()
+
+    for i in range(num_players):
+        p = hand_rank.get()
+        print(p.name, reduce(lambda x, y: x + y, p.hand.values()), p.hand)
+
 
 if __name__ == "__main__":
     main()
