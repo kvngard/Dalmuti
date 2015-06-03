@@ -21,6 +21,10 @@ def Initialize_Deck():
 
 
 def Get_Players():
+    '''
+        Generates a list of named player objects.
+        Can be used to query the user for names.
+    '''
     num_players = int(input("Number of Players: "))
     players = []
 
@@ -34,11 +38,21 @@ def Get_Players():
 
 
 def Rank_Players(players):
+    '''
+        Simply randomizes the order of the players.
+        Created as a seperate function to allow for
+        different methods of randomization in the
+        future.
+    '''
     shuffle(players)
     return players
 
 
 def Deal_Cards(players, deck):
+    '''
+        Randomizes the order of the deck and then distributes
+        the cards, beginning with the highest ranked player.
+    '''
     shuffle(deck)
     num_cards = len(deck)
 
@@ -51,6 +65,12 @@ def Deal_Cards(players, deck):
 
 
 def Revolution(players):
+    '''
+        Checks for the condition where one of the player holds
+        both 13 or "joker" cards, then asks that player if they
+        want to skip the taxation phase. If the player is the
+        lowest ranked player, rank is reversed.
+    '''
 
     for p in players:
         if p.hand.get(13) == 2:
@@ -67,8 +87,6 @@ def Revolution(players):
                     decision = input(
                         "Could you try that again? Yes or No please: ")
 
-    return False
-
 
 def Tax_Player(player, num_to_tax):
     cards = []
@@ -83,20 +101,36 @@ def Tax_Player(player, num_to_tax):
 
 
 def Calculate_Taxes(players):
+    '''
+        Provides a framework for the process of taxation.
+        Taxation is static and always affects players that
+        occupy particular spots in the ranking, so the function
+        has hard-coded values. The repetition of code is painful,
+        but is more legible than most alternatives in my opinion.
+    '''
+
+    # GD taxes the GP
     bad_cards = players[0].Prompt_For_Cards(
         "Select two cards that you wish to dispose of: ", 2)
     good_cards = Tax_Player(players[-1], 2)
+    # Players exchange 2 cards.
     players[-1].Add_Cards_To_Hand(bad_cards)
     players[0].Add_Cards_To_Hand(good_cards)
 
+    # LD taxes the LP
     bad_cards = players[1].Prompt_For_Cards(
         "Select one cards that you wish to dispose of: ", 1)
     good_cards = Tax_Player(players[-2], 1)
+    # Players exchange a card.
     players[-2].Add_Cards_To_Hand(bad_cards)
     players[1].Add_Cards_To_Hand(good_cards)
 
 
 def Setup(players, deck):
+    '''
+        Wrapper function for the different tasks that
+        need to take place before each game begins.
+    '''
 
     Deal_Cards(players, deck)
 
