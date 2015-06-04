@@ -1,6 +1,6 @@
-from queue import Queue
 from random import shuffle
 from player import Player
+from hand import Hand
 from functools import reduce
 
 
@@ -66,29 +66,31 @@ def Deal_Cards(players, deck):
 
 def Revolution(players):
     '''
-        Checks for the condition where one of the player holds
-        both 13 or "joker" cards, then asks that player if they
-        want to skip the taxation phase. If the player is the
-        lowest ranked player, rank is reversed.
+        Checks to see if one of the player holds both "joker" cards,
+        then asks that player if they want to skip the taxation phase.
+        If the player accepts and they are the lowest ranked player,
+        rank is also reversed.
     '''
 
     for p in players:
         if p.hand.get(13) == 2:
-            decision = input("Do you want a revolution? (Yes or No): ")
 
-            while True:
-                if decision.lower() == "yes":
-                    if p is players[-1]:
-                        players.reverse()
-                    return True
-                elif decision.lower() == "no":
-                    return False
-                else:
-                    decision = input(
-                        "Could you try that again? Yes or No please: ")
+            decision = p.Prompt_For_Boolean("Do you want a revolution?")
+
+            if decision:
+                if p is players[-1]:
+                    players.reverse()
+
+            return decision
 
 
 def Tax_Player(player, num_to_tax):
+    '''
+        Removes a given number of the best cards
+        from a given players hand and returns them
+        as a list.
+    '''
+
     cards = []
 
     hand = player.Get_Hand_As_List()
@@ -100,7 +102,7 @@ def Tax_Player(player, num_to_tax):
     return cards
 
 
-def Calculate_Taxes(players):
+def Calculate_And_Collect_Taxes(players):
     '''
         Provides a framework for the process of taxation.
         Taxation is static and always affects players that
@@ -118,12 +120,12 @@ def Calculate_Taxes(players):
     players[0].Add_Cards_To_Hand(good_cards)
 
     # LD taxes the LP
-    bad_cards = players[1].Prompt_For_Cards(
+    bad_card = players[1].Prompt_For_Cards(
         "Select one cards that you wish to dispose of: ", 1)
-    good_cards = Tax_Player(players[-2], 1)
+    good_card = Tax_Player(players[-2], 1)
     # Players exchange a card.
-    players[-2].Add_Cards_To_Hand(bad_cards)
-    players[1].Add_Cards_To_Hand(good_cards)
+    players[-2].Add_Cards_To_Hand(bad_card)
+    players[1].Add_Cards_To_Hand(good_card)
 
 
 def Setup(players, deck):
@@ -139,25 +141,19 @@ def Setup(players, deck):
 
     if not Revolution(players):
         print("All the world shall be taxed!")
-        Calculate_Taxes(players)
+        Calculate_And_Collect_Taxes(players)
+
+    for p in players:
+        print(p.name, reduce(lambda x, y: x + y, p.hand.values()), p.hand)
 
 
 def main():
-    hand_rank = Queue()
     deck = Initialize_Deck()
+
     players = Rank_Players(Get_Players())
-
     Setup(players, deck)
-
-    for p in players:
-        hand_rank.put(p)
-
-    num_players = hand_rank.qsize()
-
-    for i in range(num_players):
-        p = hand_rank.get()
-        print(p.name, reduce(lambda x, y: x + y, p.hand.values()), p.hand)
-
+    hand = Hand(players)
+    hand.Play_Hand()
 
 if __name__ == "__main__":
     main()

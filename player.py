@@ -81,3 +81,18 @@ class Player:
                 return cards
             else:
                 continue
+
+    def Prompt_For_Boolean(self, message):
+
+        while True:
+            decision = input("{}, Yes or No: ".format(message))
+
+            while True:
+                if decision.lower() == "yes":
+                    return True
+                elif decision.lower() == "no":
+                    return False
+                else:
+                    decision = input(
+                        "Could you try that again? Yes or No please: ")
+                    continue
