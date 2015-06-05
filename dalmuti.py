@@ -29,10 +29,10 @@ def Get_Players():
     players = []
 
     for i in range(num_players):
-        # name = input("Player {} name: ".format(i+1))
-        # players.append(Player(name))
+        name = input("Player {} name: ".format(i + 1))
+        players.append(Player(name))
         # Auto-generate player names
-        players.append(Player(chr(i + ord('A'))))
+        # players.append(Player(chr(i + ord('A'))))
 
     return players
 
@@ -143,17 +143,17 @@ def Setup(players, deck):
         print("All the world shall be taxed!")
         Calculate_And_Collect_Taxes(players)
 
-    for p in players:
-        print(p.name, reduce(lambda x, y: x + y, p.hand.values()), p.hand)
-
 
 def main():
     deck = Initialize_Deck()
 
     players = Rank_Players(Get_Players())
     Setup(players, deck)
-    hand = Hand(players)
-    hand.Play_Hand()
+    while players is not None:
+
+        hand = Hand(players)
+        players = hand.Play_Hand()
+
 
 if __name__ == "__main__":
     main()

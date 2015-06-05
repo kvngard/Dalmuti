@@ -62,9 +62,12 @@ class Player:
     def Prompt_For_Cards(self, message, num_to_remove=None):
 
         while True:
-            self.Display_Hand()
+            cards = []
             cards = input("{}, {}".format(self.name, message))
             cards = re.findall("\\b1[0-3]\\b|\\b[1-9]\\b", cards)
+
+            if not cards:
+                continue
 
             if num_to_remove is not None:
                 if len(cards) != num_to_remove:
@@ -85,12 +88,12 @@ class Player:
     def Prompt_For_Boolean(self, message):
 
         while True:
-            decision = input("{}, Yes or No: ".format(message))
+            decision = input("{} Yes or No: ".format(message))
 
             while True:
-                if decision.lower() == "yes":
+                if decision.lower() == "yes" or decision.lower() == 'y':
                     return True
-                elif decision.lower() == "no":
+                elif decision.lower() == "no" or decision.lower() == 'n':
                     return False
                 else:
                     decision = input(
