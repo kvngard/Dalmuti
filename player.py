@@ -8,6 +8,9 @@ class Player:
         self.hand = {}
         self.rank = None
 
+    def __repr__(self):
+        return self.name
+
     def Get_Hand_As_List(self):
         hand_list = []
 
