@@ -21,7 +21,7 @@ class Player:
         return hand_list
 
     def Display_Hand(self):
-        print(self.Get_Hand_As_List())
+        print("{}, you hand: {}".format(self.name, self.Get_Hand_As_List()))
 
     def Check_Has_Cards(self, cards):
         cards_to_remove = {}
@@ -82,6 +82,7 @@ class Player:
                     continue
 
             cards = [int(c) for c in cards]
+            cards.sort()
 
             if self.Remove_Cards_From_Hand(cards):
                 return cards

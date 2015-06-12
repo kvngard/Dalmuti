@@ -128,11 +128,13 @@ def Calculate_And_Collect_Taxes(players):
     players[1].Add_Cards_To_Hand(good_card)
 
 
-def Setup(players, deck):
+def Setup(players):
     '''
         Wrapper function for the different tasks that
         need to take place before each game begins.
     '''
+
+    deck = Initialize_Deck()
 
     Deal_Cards(players, deck)
 
@@ -145,12 +147,11 @@ def Setup(players, deck):
 
 
 def main():
-    deck = Initialize_Deck()
 
     players = Rank_Players(Get_Players())
-    Setup(players, deck)
     while players is not None:
 
+        Setup(players)
         hand = Hand(players)
         players = hand.Play_Hand()
 
